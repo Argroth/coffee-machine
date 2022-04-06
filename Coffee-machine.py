@@ -10,16 +10,19 @@ class CoffeeMachine:
         print(f"Coffee left: {self.coffee}")
         print(f"Milk left: {self.milk}")
         print(f"Water left: {self.water}")
+        print(f"Money left: {self.money}")
 
     #check remaining stocks before making a coffee
     def checkRemainingStock(self, coffeToMake):
         #get coffee to check ingredients
         coffeIngredients = coffeeMenu[coffeToMake]
 
+        #checking ingredients and printing results if there is not enough resources in stock
         if(coffeIngredients["water"] < self.water or coffeIngredients["coffee"] < self.coffee or coffeIngredients["milk"] < self.milk):
             print("Za mało składników!")
-        # print(coffeIngredients)
-        print(f"resources left coffee: {self.coffee}, milk: {self.milk}, water: {self.water}")
+            return True
+
+        return "133"
 
     #make coffee
     def makeCoffee(self, coffeeToMake):
@@ -28,10 +31,10 @@ class CoffeeMachine:
 #Define coffee machine menu
 coffeeMenu = {
     "latte": {
-        "water": 50,
-        "coffee": 20,
-        "milk": 150,
-        "price": 1.4
+        "water": 1,
+        "coffee": 1,
+        "milk": 1,
+        "price": 1
     },
 
     "cappucino": {
@@ -50,16 +53,19 @@ coffeeMenu = {
 }
 
 #create new instance of Coffee Machine: coffee, milk, water, money
-coffeeMachine = CoffeeMachine(10, 500, 500, 5)
+coffeeMachine = CoffeeMachine(1000, 500, 500, 5)
 
 print(coffeeMenu)
-x = input("Podaj co robić: ")
+#x = input("Podaj co robić: ")
+x = "coffee"
+y = "latte"
 if(x == "stock"):
     coffeeMachine.printStatus()
 elif(x == "coffee"):
-    coffeToMake = input("Jaką kawę zrobić? ")
-    coffeeMachine.checkRemainingStock(coffeToMake)
-    # coffeeMachine.makeCoffee(coffeToMake)
+    #coffeToMake = input("Jaką kawę zrobić? ")
+    print(coffeeMachine.checkRemainingStock(y))
+    if(coffeeMachine.checkRemainingStock(y) == False):
+        coffeeMachine.makeCoffee(coffeToMake)
 
 #
 #
