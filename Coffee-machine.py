@@ -1,5 +1,9 @@
 import time
+import gc
+from tabulate import tabulate
 from tqdm import tqdm
+
+machines = []
 
 
 class CoffeeMachine:
@@ -7,6 +11,7 @@ class CoffeeMachine:
     coffeesMade = 0
 
     def __init__(self, coffee, milk, water, money):
+        self.id = (len(machines))
         self.coffee = coffee
         self.milk = milk
         self.water = water
@@ -49,8 +54,9 @@ class CoffeeMachine:
         print(f"Price: {currentCoffee['price']}")
         print(f"Change: {insertedCoin - currentCoffee['price']}")
 
-    def calculateIncome(self, income):
-        self.income = self.income + round(income, 3)
+    # calculate income for specific machine
+    def calculateIncome(self, machineIncome):
+        self.income = self.income + round(machineIncome, 3)
 
 
 coffeeMenu = {
@@ -79,30 +85,70 @@ coffeeMenu = {
     }
 }
 
-coffeeMachine = CoffeeMachine(1000, 500, 500, 10)
 
+# init one machine
+machines.append(CoffeeMachine(1000, 500, 500, 10))
+
+# menu
 answer = True
 while answer:
-    print("""
+    print(f"""
+    Welcome to BasicCoffee. Currently we have {len(machines)} working machine(s).
     1.  Make a coffee
     2.  Check Status
     3.  Collect Income
+    9.  Install new machine
+    ---
     Q.  Quit
     """)
     answer = input("Choose option: ")
+    # make a coffee
     if answer == "1":
+        table = []
+
+        print("Available coffee machines: ")
+        for obj in gc.get_objects():
+            if isinstance(obj, CoffeeMachine):
+                table.append(obj.__dict__)
+
+        print(tabulate(table, headers="keys"))
+        machine = int(input("Choose Coffee Machine: "))
+        print(machines[machine])
+
         moneyInserted = int(input("Please insert money! "))
+
+        print("Menu: ")
+        for drink in coffeeMenu:
+            print(drink)
+
         coffeeToMake = input("What do you want to drink? ")
-        if not coffeeMachine.checkRemainingStock(coffeeToMake):
-            coffeeMachine.makeCoffee(coffeeToMake, moneyInserted)
+        if not machines[machine].checkRemainingStock(coffeeToMake):
+            machines[machine].makeCoffee(coffeeToMake, moneyInserted)
 
+    # print status of specific machine
     elif answer == "2":
-        print(coffeeMachine.printStatus())
+        table = []
+        incomeAllMachines = 0
+        for obj in gc.get_objects():
+            if isinstance(obj, CoffeeMachine):
+                table.append(obj.__dict__)
+                incomeAllMachines = incomeAllMachines + obj.income
 
+        print(tabulate(table, headers="keys"))
+        print(f"Income: {incomeAllMachines}")
+
+    # collect income across all machines
     elif answer == "3":
-        print("\n Collecting income...")
-        print(f"Collected income: {coffeeMachine.income}")
-        coffeeMachine.income = 0
+        income = 0
+        for obj in gc.get_objects():
+            if isinstance(obj, CoffeeMachine):
+                income = income + obj.income
+
+        print(f"Current income across all coffee machines: {income}")
+
+    # create new machine
+    elif answer == "9":
+        machines.append(CoffeeMachine(222, 666, 555, 100))
 
     elif answer == "Q" or answer == "q":
         print("\n Goodbye")
